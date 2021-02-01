@@ -1,0 +1,7 @@
+{
+    "name": "com.tsgcpp.extenjectextension.compositeinstaller",
+    "displayName": "ExtenjectExtension-CompositeInstaller",
+    "version": "0.0.1",
+    "description": "Extenject extension for composite pattern installers",
+    "dependencies": {}
+}
