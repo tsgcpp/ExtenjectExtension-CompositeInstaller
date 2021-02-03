@@ -3,11 +3,14 @@ using Zenject;
 
 namespace ExtenjectExtension.CompositeInstaller.Tests.Installers.CompositeMonoInstallers
 {
-    public class FooInstaller : MonoInstaller<FooInstaller>
+    public class FooInjecteeInstaller : MonoInstaller<FooInjecteeInstaller>
     {
         public override void InstallBindings()
         {
-            Container.Bind<Foo>().AsSingle().NonLazy();
+            Container
+                .Bind<FooInjectee>()
+                .AsSingle()
+                .NonLazy();
         }
     }
 }

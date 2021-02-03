@@ -80,6 +80,46 @@ namespace ExtenjectExtension.CompositeInstaller.Tests.Installers
             yield break;
         }
 
+        [UnityTest]
+        public IEnumerator TestMultipleInstallers()
+        {
+            PreInstall();
+            FooInjecteeInstaller.InstallFromResource("TestCompositeMonoInstaller/FooInjecteeInstaller/FooInjecteeInstaller", Container);
+            InstallCompositeMonoInstallerFromResource("TestCompositeMonoInstaller/FooInstaller/TestCompositeMonoFooInstaller", Container);
+            PostInstall();
+
+            FixtureUtil.AssertResolveCount<Foo>(Container, 1);
+            FixtureUtil.AssertResolveCount<FooInjectee>(Container, 1);
+            yield break;
+        }
+
+        [UnityTest]
+        public IEnumerator TestMultipleInstallersDeep()
+        {
+            PreInstall();
+            InstallCompositeMonoInstallerFromResource("TestCompositeMonoInstaller/FooInjecteeInstaller/TestCompositeMonoFooInjecteeInstaller", Container);
+            InstallCompositeMonoInstallerFromResource("TestCompositeMonoInstaller/FooInstaller/TestCompositeMonoFooInstaller", Container);
+            PostInstall();
+
+            FixtureUtil.AssertResolveCount<Foo>(Container, 1);
+            FixtureUtil.AssertResolveCount<FooInjectee>(Container, 1);
+            yield break;
+        }
+
+        [UnityTest]
+        public IEnumerator TestDuplicateInstallers()
+        {
+            PreInstall();
+            InstallCompositeMonoInstallerFromResource("TestCompositeMonoInstaller/FooInstaller/TestCompositeMonoFooInstaller", Container);
+            Assert.Throws<ZenjectException>(() =>
+            {
+                InstallCompositeMonoInstallerFromResource("TestCompositeMonoInstaller/FooInstaller/TestCompositeMonoDeepFooInstaller1", Container);
+            });
+            PostInstall();
+
+            yield break;
+        }
+
         // An installation method for "CompositeMonoInstaller".
         // MonoInstaller.InstallFromResource uses "GetComponentsInChildren", so it can't be used for "CompositeMonoInstaller" if the prefab has multiple "CompositeMonoInstaller".
         public static void InstallCompositeMonoInstallerFromResource(string resourcePath, DiContainer container)
