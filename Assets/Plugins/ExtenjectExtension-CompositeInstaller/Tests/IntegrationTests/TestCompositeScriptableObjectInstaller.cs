@@ -78,5 +78,45 @@ namespace ExtenjectExtension.CompositeInstaller.Tests.Installers
             Assert.IsEqual(Container.Resolve<int>(), 5678);
             yield break;
         }
+
+        [UnityTest]
+        public IEnumerator TestMultipleInstallers()
+        {
+            PreInstall();
+            FooInjecteeInstaller.InstallFromResource("TestCompositeScriptableObjectInstaller/FooInjecteeInstaller/FooInjecteeInstaller", Container);
+            CompositeScriptableObjectInstaller.InstallFromResource("TestCompositeScriptableObjectInstaller/FooInstaller/TestCompositeScriptableObjectFooInstaller", Container);
+            PostInstall();
+
+            FixtureUtil.AssertResolveCount<Foo>(Container, 1);
+            FixtureUtil.AssertResolveCount<FooInjectee>(Container, 1);
+            yield break;
+        }
+
+        [UnityTest]
+        public IEnumerator TestMultipleInstallersDeep()
+        {
+            PreInstall();
+            CompositeScriptableObjectInstaller.InstallFromResource("TestCompositeScriptableObjectInstaller/FooInjecteeInstaller/TestCompositeSOFooInjecteeInstaller", Container);
+            CompositeScriptableObjectInstaller.InstallFromResource("TestCompositeScriptableObjectInstaller/FooInstaller/TestCompositeScriptableObjectFooInstaller", Container);
+            PostInstall();
+
+            FixtureUtil.AssertResolveCount<Foo>(Container, 1);
+            FixtureUtil.AssertResolveCount<FooInjectee>(Container, 1);
+            yield break;
+        }
+
+        [UnityTest]
+        public IEnumerator TestDuplicateInstallers()
+        {
+            PreInstall();
+            CompositeScriptableObjectInstaller.InstallFromResource("TestCompositeScriptableObjectInstaller/FooInstaller/TestCompositeScriptableObjectDeepFooInstaller1", Container);
+            Assert.Throws<ZenjectException>(() =>
+            {
+                CompositeScriptableObjectInstaller.InstallFromResource("TestCompositeScriptableObjectInstaller/FooInstaller/TestCompositeScriptableObjectDeepFooInstaller2", Container);
+            });
+            PostInstall();
+
+            yield break;
+        }
     }
 }

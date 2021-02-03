@@ -7,7 +7,7 @@ Extenject extension for composite pattern installers
 
 
 ## Installation
-- All installation require "Extenject"
+- All installations require "Extenject"
 
 ### Unity Package Manager
 - Use `Assets/Plugins/ExtenjectExtension-CompositeInstaller/package.json`
